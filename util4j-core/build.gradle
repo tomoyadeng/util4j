@@ -1,0 +1,4 @@
+jar {
+    baseName = 'util4j-core'
+    version = "${projectVersion}"
+}

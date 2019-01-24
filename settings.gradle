@@ -1,0 +1,3 @@
+rootProject.name = 'util4j'
+include 'util4j-core'
+
