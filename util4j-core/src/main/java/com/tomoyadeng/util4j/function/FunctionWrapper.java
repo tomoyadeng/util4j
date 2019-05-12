@@ -3,6 +3,9 @@ package com.tomoyadeng.util4j.function;
 import org.slf4j.Logger;
 
 import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class FunctionWrapper {
@@ -23,38 +26,50 @@ public class FunctionWrapper {
     this.handler = handler;
   }
 
-  public <T, R> Function<T, R> unchecked(CheckedFunction<T, R> function) {
-    if (this.handler == null) {
-      return function.unchecked();
-    } else {
-      return function.unchecked(handler::onException);
-    }
+  public <T, R> Function<T, R> unchecked(CheckedFunction<T, R> f) {
+    return f.unchecked(exceptionConsumer());
   }
 
-  public <T, R> Function<T, R> orNull(CheckedFunction<T, R> function) {
+  public <T, R> Function<T, R> orNull(CheckedFunction<T, R> f) {
+    return f.orNull(exceptionConsumer());
+  }
+
+  public <T, U, R> BiFunction<T, U, R> unchecked(CheckedBiFunction<T, U, R> f) {
+    return f.unchecked(exceptionConsumer());
+  }
+
+  public <T, U, R> BiFunction<T, U, R> orNull(CheckedBiFunction<T, U, R> f) {
+    return f.orNull(exceptionConsumer());
+  }
+
+  public <T> Consumer<T> unchecked(CheckedConsumer<T> f) {
+    return f.unchecked(exceptionConsumer());
+  }
+
+  public <T> Consumer<T> ignore(CheckedConsumer<T> f) {
+    return f.ignore(exceptionConsumer());
+  }
+
+  public <T, U> BiConsumer<T, U> unchecked(CheckedBiConsumer<T, U> f) {
+    return f.unchecked(exceptionConsumer());
+  }
+
+  public <T, U> BiConsumer<T, U> ignore(CheckedBiConsumer<T, U> f) {
+    return f.ignore(exceptionConsumer());
+  }
+
+  private Consumer<Exception> exceptionConsumer() {
+    // if handler not configured, do nothing
     if (this.handler == null) {
-      return function.orNull();
-    } else {
-      return function.orNull(handler::onException);
+      return t -> {};
     }
+
+    return handler::onException;
   }
 
   @FunctionalInterface
   public interface ExceptionHandler {
     void onException(Exception e);
-  }
-
-  public static class PrintStreamExceptionHandler implements ExceptionHandler {
-    private PrintStreamExceptionHandler() {}
-
-    public static PrintStreamExceptionHandler getHandler() {
-      return new PrintStreamExceptionHandler();
-    }
-
-    @Override
-    public void onException(Exception e) {
-      e.printStackTrace();
-    }
   }
 
   public static class LoggerExceptionHandler implements ExceptionHandler {

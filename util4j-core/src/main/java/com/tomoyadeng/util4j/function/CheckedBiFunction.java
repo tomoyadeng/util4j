@@ -2,27 +2,27 @@ package com.tomoyadeng.util4j.function;
 
 import com.tomoyadeng.util4j.function.exception.FunctionRuntimeException;
 
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 @FunctionalInterface
-public interface CheckedFunction<T, R> {
-  R apply(T t) throws Exception;
+public interface CheckedBiFunction<T, U, R> {
+  R apply(T t, U u) throws Exception;
 
-  default Function<T, R> unchecked() {
-    return t -> {
+  default BiFunction<T, U, R> unchecked() {
+    return (t, u) -> {
       try {
-        return apply(t);
+        return apply(t, u);
       } catch (Exception e) {
         return wrapAndThrow(e);
       }
     };
   }
 
-  default Function<T, R> unchecked(Consumer<Exception> c) {
-    return t -> {
+  default BiFunction<T, U, R> unchecked(Consumer<Exception> c) {
+    return (t, u) -> {
       try {
-        return apply(t);
+        return apply(t, u);
       } catch (Exception e) {
         c.accept(e);
         return wrapAndThrow(e);
@@ -30,20 +30,20 @@ public interface CheckedFunction<T, R> {
     };
   }
 
-  default Function<T, R> orNull() {
-    return t -> {
+  default BiFunction<T, U, R> orNull() {
+    return (t, u) -> {
       try {
-        return apply(t);
+        return apply(t, u);
       } catch (Exception e) {
         return null;
       }
     };
   }
 
-  default Function<T, R> orNull(Consumer<Exception> c) {
-    return t -> {
+  default BiFunction<T, U, R> orNull(Consumer<Exception> c) {
+    return (t, u) -> {
       try {
-        return apply(t);
+        return apply(t, u);
       } catch (Exception e) {
         c.accept(e);
         return null;
