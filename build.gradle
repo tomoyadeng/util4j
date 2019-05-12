@@ -20,6 +20,10 @@ subprojects {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
 
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+
     publishing {
         publications {
             mavenJava(MavenPublication) {
@@ -34,6 +38,6 @@ subprojects {
     }
 
     dependencies {
-        compile group: 'org.projectlombok', name: 'lombok', version: '1.18.2'
+        testCompile('junit:junit:4.12')
     }
 }
